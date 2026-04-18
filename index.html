@@ -1,0 +1,36 @@
+@@ -72,12 +72,8 @@ <h1>Select A Major</h1>
+  </script>
+
+  <script>
+    // Global variable to hold the student data after fetching
+    let studentDataArray = [];
+
+    /**
+     * Loads the JSON data file using the fetch API.
+     */
+    let studentDataArray = [];
+    function loadStudentData() {
+      fetch('cit5students.json')
+        .then(response => {
+@@ -88,8 +84,7 @@ <h1>Select A Major</h1>
+        })
+        .then(data => {
+          studentDataArray = data;
+          // Optionally, you can display one set by default here
+          // displayFilteredStudents("CIT");
+
+        })
+        .catch(error => {
+          console.error('Error loading JSON data:', error);
+@@ -98,10 +93,9 @@ <h1>Select A Major</h1>
+    }
+
+    function displayFilteredStudents(majorType) {
+      // Filter the data by major (case-sensitive)
+    
+      const filtered = studentDataArray.filter(student => student.major === majorType);
+
+      // Grab the template, compile it, and pass in the filtered data
+      const templateSource = document.getElementById('student-template').innerHTML;
+      const template = Handlebars.compile(templateSource);
+      const compiledHtml = template({ students: filtered });
