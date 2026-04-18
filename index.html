@@ -1,33 +1,82 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <title>CIT and Business Majors</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.2/handlebars.min.js"></script>
+<html><head>  <meta charset="UTF-8"> 
+    <title>students by major</title>
 </head>
-<body>
-  <h1> Select a Major</h1>
-  <h1>Select a Major</h1>
-  <button onclick="filterMajors('CIT')">CIT Majors</button>
-  <button onclick="filterMajors('BUS')">Business Majors</button>
-  <div id="result"></div>
-  <h6> We filter our dataset by Major</h6>
-  <h6>We filter our dataset by Major</h6>
+<body style='margin-left: 30px;'>
 
-  <!-- Handlebars Template -->
-  <script id="template" type="text/x-handlebars-template">
-    <table>
+    <h1>Select a Major</h1>
+        
+    <button type="button" id="cit_btn">CIT Majors</button>
+    <button type="button" id="bus_btn">Business Majors</button>
+
+	<div id="datasetHeader" style="font-weight: bold; margin-top:10px;">
+		We filter our dataset by major
+	</div>
+             
+ 	<div id="result"></div>
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.2/handlebars.min.js"></script>
+
+<script>
+   
+    document.addEventListener('DOMContentLoaded', function() {      // when page has loaded, more or less
+
+		function filterCIT(student) {
+			return student.major == 'CIT';
+		}
+		function filterBUS(student) {
+			return student.major == 'BUS';
+		}
+													  
+    	document.querySelector('#cit_btn').onclick = async function(){   
+			var response = await fetch('cit5students.json'); // ajax GET request
+        	//console.log(response);
+			if(response.ok) {
+				var data = await response.json(); // array of objects
+
+				var filtered = data.filter(filterCIT); 
+
+				var source = document.getElementById('tableTemplate').innerHTML; // get template text
+				var template = Handlebars.compile(source); // compile the template
+
+				var html = template({ rows: filtered }); // evaluate template with filtered student data
+
+				document.getElementById('result').innerHTML = html; //display completed html in division
+			}	
+    	};
+	
+		document.querySelector('#bus_btn').onclick = async function(){   
+			var response = await fetch('cit5students.json'); // ajax GET request
+        	//console.log(response);
+			if(response.ok) {
+				var data = await response.json(); // array of objects
+
+				var filtered = data.filter(filterBUS);
+
+				var source = document.getElementById('tableTemplate').innerHTML; // get template text
+				var template = Handlebars.compile(source); // compile the template
+
+				var html = template({ rows: filtered }); // evaluate template with filtered student data
+
+				document.getElementById('result').innerHTML = html; //display completed html in division
+			}	
+    	};
+  	});
+  
+</script>
+ 
+<!-- Handlebars template -->
+<script type="text/x-handlebars-template" id="tableTemplate">
+
+   <table cellspacing='12'>
       <tr><th>Name</th><th>Major</th><th>Midterm</th><th>Final</th></tr>
-      {{#each students}}
-        <tr>
-          <td>{{name}}</td>
-          <td>{{major}}</td>
-          <td>{{midterm}}</td>
-          <td>{{final}}</td>
-        </tr>
+      {{#each rows}}
+         <tr>
+            <td>{{name}}</td><td>{{major}}</td><td>{{midterm}}</td><td>{{final}}</td>
+         </tr>
       {{/each}}
-    </table>
-  </script>
+   </table>
+</script>
 
-  <script src="app.js"></script>
 </body>
 </html>
