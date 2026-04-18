@@ -1,66 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Page Title -->
-    <title>Project F2</title>
-
-    <!-- Import font from google fonts  -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
-
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Program 5</title>
+  <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      background: #f7f7f7;
+    }
+    h1 {
+      text-align: center;
+    }
+    #controls {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      margin: 0 0.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    table {
+      margin: 0 auto;
+      border-collapse: collapse;
+      width: 80%;
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid #aaa;
+      padding: 0.5rem;
+      text-align: center;
+    }
+    th {
+      background: #ddd;
+    }
+  </style>
 </head>
-
 <body>
-    <!-- Header -->
-    <header>
-        <div id="headRectangle">
-            Student Portal
-        </div>
-    </header>
+  <h1>Select A Major</h1>
+  <div id="controls">
+    <button id="btnCIT">CIT Majors</button>
+    <button id="btnBUS">Business Majors</button>
+  </div>
+  <div id="displayArea">
+  </div>
 
-    <main>
-        <!-- Search Bar and button -->
-        <div>
-            <input type="text" id="searchBox" placeholder="Search">
-            <button type="submit" class="button" id="searchButton">Search</button>
-        </div>
-        <!-- container to add filter buttons as flexbox, evenly spread -->
-        <div class="container">
-            <button type="submit" class="button" id="sortAZ">Sort A->Z</button>
-            <button type="submit" class="button" id="sortZA">Sort Z->A</button>
-            <button type="submit" class="button" id="sortMarks">Sort By Marks</button>
-            <button type="submit" class="button" id="sortPassing">Sort By Passing</button>
-            <button type="submit" class="button" id="sortClass">Sort By Class</button>
-            <button type="submit" class="button" id="sortGender">Sort By Gender</button>
-        </div>
-        <!-- creating a table and intializing its header/thead -->
-        <div>
-            <table style="width:94.7%; margin:39px;" id="dataTable">
-                <tr>
-                    <th style="width:5%">ID</th>
-                    <th style="width:35%">Name</th>
-                    <th style="width:10%">Gender</th>
-                    <th style="width:10%">Class</th>
-                    <th style="width:10%">Marks</th>
-                    <th style="width:10%">Passing</th>
-                    <th style="width:20%">Email</th>
-                </tr>
-            </table>
-        </div>
+  <script id="student-template" type="text/x-handlebars-template">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Major</th>
+          <th>Midterm</th>
+          <th>Final</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each students}}
+          <tr>
+            <td>{{name}}</td>
+            <td>{{major}}</td>
+            <td>{{midterm}}</td>
+            <td>{{final}}</td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </script>
 
-    </main>
+  <script>
 
-    <!-- Linking js file to our HTML page & Note: it is imp to write ' type="module" ', whenever we import json file and wants to display its content on local server-->
-    <script type="module" src="script.js"></script>
+    let studentDataArray = [];
+    function loadStudentData() {
+      fetch('cit5students.json')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network error: ' + response.statusText);
+          }
+          return response.json();
+        })
+        .then(data => {
+          studentDataArray = data;
+
+        })
+        .catch(error => {
+          console.error('Error loading JSON data:', error);
+          document.getElementById('displayArea').innerHTML = '<p>Error loading data.</p>';
+        });
+    }
+
+    function displayFilteredStudents(majorType) {
+    
+      const filtered = studentDataArray.filter(student => student.major === majorType);
+
+      const templateSource = document.getElementById('student-template').innerHTML;
+      const template = Handlebars.compile(templateSource);
+      const compiledHtml = template({ students: filtered });
+
+      document.getElementById('displayArea').innerHTML = compiledHtml;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadStudentData();
+
+      document.getElementById('btnCIT').addEventListener('click', () => {
+        displayFilteredStudents("CIT");
+      });
+
+      document.getElementById('btnBUS').addEventListener('click', () => {
+        displayFilteredStudents("BUS");
+      });
+    });
+  </script>
 </body>
-
 </html>
